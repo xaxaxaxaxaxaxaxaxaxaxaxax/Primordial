@@ -1,4 +1,4 @@
-local Arguments = {
+return {
     [2788229376] = "UpdateMousePosI2",
     [4106313503] = "UpdateMousePosI2",
     [11143225577] = "UpdateMousePosI2",
