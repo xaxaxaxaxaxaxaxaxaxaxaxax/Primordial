@@ -1,7 +1,7 @@
 ## Primordial
 -------------------------
 It's a free decent mobile and pc hood **camlock**.
--# 5$ For a lifetime key.
+# 5$ For a lifetime key.
 -------------------------
 # Join now and cop!!
 
