@@ -17,7 +17,7 @@ return {
     [17403262882] = "MOUSE",
     [15186202290] = "MOUSE",
     [15763494605] = "MOUSE",
-    [9825515356] = "UpdateMousePositionI",
+    [9825515356] = "MousePosUpdate",
     [130633951564639] = "MOUSE",
     [125825216602676] = "MOUSE",
     [15166543806] = "MoonUpdateMousePos",
