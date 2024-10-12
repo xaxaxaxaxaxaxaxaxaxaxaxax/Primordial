@@ -1,19 +1,12 @@
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local tablefind = table.find
-local MainEvent = ReplicatedStorage.MainEvent
-
 local Flags = {
     "CHECKER_1",
     "TeleportDetect",
     "OneMoreTime",
-    'CHECKER_1',
-    'CHECKER',
-    'OneMoreTime',
-    'checkingSPEED',
-    'PERMAIDBAN',
-    'BANREMOTE',
-    'FORCEFIELD',
-    'TeleportDetect'
+    "CHECKER",
+    "checkingSPEED",
+    "PERMAIDBAN",
+    "BANREMOTE",
+    "FORCEFIELD"
 }
 
 local __namecall
@@ -22,7 +15,7 @@ __namecall = hookmetamethod(game, "__namecall", function(...)
     local self = args[1]
     local method = getnamecallmethod()
 
-    if (method == "FireServer" and self == MainEvent and tablefind(Flags, args[2])) then
+    if (method == "FireServer" and self == game:GetService("ReplicatedStorage").MainEvent and table.find(Flags, args[2])) then
         return
     end
 
