@@ -1,0 +1,84 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local tablefind = table.find
+local MainEvent = ReplicatedStorage.MainEvent
+
+local Flags = {
+    "CHECKER_1",
+    "TeleportDetect",
+    "OneMoreTime",
+    'CHECKER_1',
+    'CHECKER',
+    'OneMoreTime',
+    'checkingSPEED',
+    'PERMAIDBAN',
+    'BANREMOTE',
+    'FORCEFIELD',
+    'TeleportDetect'
+}
+
+local __namecall
+__namecall = hookmetamethod(game, "__namecall", function(...)
+    local args = {...}
+    local self = args[1]
+    local method = getnamecallmethod()
+
+    if (method == "FireServer" and self == MainEvent and tablefind(Flags, args[2])) then
+        return
+    end
+
+    if (not checkcaller() and getfenv(2).crash) then
+        local fenv = getfenv(2)
+        fenv.crash = function() end
+        setfenv(2, fenv)
+    end
+
+    return __namecall(...)
+end)
+
+local __newindex
+__newindex = hookmetamethod(game, "__newindex", function(t, k, v)
+    if (not checkcaller() and t:IsA("Humanoid") and (k == "WalkSpeed" or k == "JumpPower")) then
+        return
+    end
+    return __newindex(t, k, v)
+end)
+
+local g = getinfo or debug.getinfo
+local d = false
+local h = {}
+local x, y
+
+setthreadidentity(2)
+
+for i, v in getgc(true) do
+    if typeof(v) == "table" then
+        local a = rawget(v, "Detected")
+        local b = rawget(v, "Kill")
+    
+        if typeof(a) == "function" and not x then
+            x = a
+            local o = hookfunction(x, function(c, f, n)
+                if c ~= "_" then
+                    return true
+                end
+            end)
+            table.insert(h, x)
+        end
+
+        if rawget(v, "Variables") and rawget(v, "Process") and typeof(b) == "function" and not y then
+            y = b
+            local o = hookfunction(y, function(f) end)
+            table.insert(h, y)
+        end
+    end
+end
+
+hookfunction(getrenv().debug.info, newcclosure(function(...)
+    local a, f = ...
+    if x and a == x then
+        return coroutine.yield(coroutine.running())
+    end
+    return o(...)
+end))
+
+setthreadidentity(7)
