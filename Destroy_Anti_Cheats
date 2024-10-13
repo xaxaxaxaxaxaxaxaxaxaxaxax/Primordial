@@ -87,16 +87,16 @@ FireHook = hookmetamethod(
     function(...)
         local c = {...}
         local self, d, e = c[1], getnamecallmethod(), getcallingscript()
-        if d == "FireServer" and self == game.ReplicatedStorage.Remotes and table.find(a, c[2]) then
+        if d == "FireServer" and self == local Remote and table.find(a, c[2]) then
             return
         end
         return FireHook(...)
     end
 )
 
-local RemoteNames = {"Remotes", "Remotes", "Remotes", "Remotes"}
+local Remote = {"MainEvent", "Bullets", "Remote", "MAINEVENT"}
 for _, remote in pairs(ReplicatedStorage:GetDescendants()) do
-    if table.find(RemoteNames, remote.Name) and remote:IsA("RemoteEvent") then
+    if table.find(Remote, remote.Name) and remote:IsA("RemoteEvent") then
         return remote
     end
 end
