@@ -46,8 +46,7 @@ local o; o = hookfunction(getrenv().debug.info, newcclosure(function(...)
         end
 
         return coroutine.yield(coroutine.running())
-    
-end
+    end
     
     return o(...)
 end))
@@ -88,9 +87,16 @@ FireHook = hookmetamethod(
     function(...)
         local c = {...}
         local self, d, e = c[1], getnamecallmethod(), getcallingscript()
-        if d == "FireServer" and self == game.ReplicatedStorage.MainEvent and table.find(a, c[2]) then
+        if d == "FireServer" and self == game.ReplicatedStorage.Remotes and table.find(a, c[2]) then
             return
         end
         return FireHook(...)
     end
 )
+
+local RemoteNames = {"Remotes", "Remotes", "Remotes", "Remotes"}
+for _, remote in pairs(ReplicatedStorage:GetDescendants()) do
+    if table.find(RemoteNames, remote.Name) and remote:IsA("RemoteEvent") then
+        return remote
+    end
+end
