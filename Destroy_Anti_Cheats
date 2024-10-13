@@ -53,50 +53,58 @@ end))
 
 setthreadidentity(7)
 
-local a = {
-    "BANREMOTE",
-    "PERMAIDBAN",
-    "KICKREMOTE",
-    "BR_KICKPC",
-    "BR_KICKMOBILE",
-    "OneMoreTime",
-    "CHECKER_1",
-    "TeleportDetect",
-    "CHECKER",
-    "GUI_CHECK",
-    "checkingSPEED",
-    "CHECKER_1",
-    "TeleportDetect",
-    "OneMoreTime",
-    "PERMA-BAN",
-    "PERMABAN",
-    "BreathingHAMON",
-    "JJARC",
-    "TakePoisonDamage",
-    "FORCEFIELD",
-    "Christmas_Sock",
-    "VirusCough",
-    "Symbiote",
-    "Symbioted",
-    "RequestAFKDisplay"
-}
-local FireHook
-FireHook = hookmetamethod(
-    game,
-    "__namecall",
-    function(...)
-        local c = {...}
-        local self, d, e = c[1], getnamecallmethod(), getcallingscript()
-        if d == "FireServer" and self == local Remote and table.find(a, c[2]) then
-            return
-        end
-        return FireHook(...)
-    end
-)
+if game.PlaceId == 7213786345 or game.PlaceId == 16033173781 or game.PlaceId == 2788229376 then
+    local a = {
+        "BANREMOTE",
+        "PERMAIDBAN",
+        "KICKREMOTE",
+        "BR_KICKPC",
+        "BR_KICKMOBILE",
+        "OneMoreTime",
+        "CHECKER_1",
+        "TeleportDetect",
+        "CHECKER",
+        "GUI_CHECK",
+        "checkingSPEED",
+        "CHECKER_1",
+        "TeleportDetect",
+        "OneMoreTime",
+        "PERMA-BAN",
+        "PERMABAN",
+        "BreathingHAMON",
+        "JJARC",
+        "TakePoisonDamage",
+        "FORCEFIELD",
+        "Christmas_Sock",
+        "VirusCough",
+        "Symbiote",
+        "Symbioted",
+        "RequestAFKDisplay"
+    }
 
-local Remote = {"MainEvent", "Bullets", "Remote", "MAINEVENT"}
-for _, remote in pairs(ReplicatedStorage:GetDescendants()) do
-    if table.find(Remote, remote.Name) and remote:IsA("RemoteEvent") then
-        return remote
+    local Remote
+
+    local FireHook
+    FireHook = hookmetamethod(
+        game,
+        "__namecall",
+        function(...)
+            local c = {...}
+            local self, d, e = c[1], getnamecallmethod(), getcallingscript()
+            if d == "FireServer" and self == Remote and table.find(a, c[2]) then
+                return
+            end
+            return FireHook(...)
+        end
+    )
+
+    local RemoteNames = {"MainEvent", "Bullets", "Remote", "MAINEVENT"}
+    for _, remote in pairs(game.ReplicatedStorage:GetDescendants()) do
+        if table.find(RemoteNames, remote.Name) and remote:IsA("RemoteEvent") then
+            Remote = remote
+            break
+        end
     end
+
+    return Remote
 end
