@@ -147,47 +147,87 @@ local SaveManager = {} do
         end
     end
     function SaveManager:BuildConfigSection(tab)
-        assert(self.Library, 'Must set SaveManager.Library')
-        local section = tab:Section({Name = "Configuration", Side = "Right"})
-        section:Textbox({Name = "Config Name", Flag = "ConfigName"})
-        section:Dropdown({Name = "Config List", Flag = "ConfigList", List = self:RefreshConfigList()})
-        section:Button({Name = "Create Config", Callback = function()
-            local name = Library.Flags["ConfigName"]
+    assert(self.Library, 'Must set SaveManager.Library')
+
+    local section = tab:Section({Name = "Configuration", Side = "Right"})
+
+    section:Textbox({
+        Name = "Config Name",
+        Flag = "SaveManager_ConfigName",
+        Default = "",
+        Callback = function() end
+    })
+
+    local configList = section:List({
+        Name = "Config List",
+        Flag = "SaveManager_ConfigList",
+        Options = self:RefreshConfigList(),
+        Callback = function() end
+    })
+
+    section:Button({
+        Name = "Create config", 
+        Callback = function()
+            local name = self.Library.Flags["SaveManager_ConfigName"]
             if name:gsub(' ', '') == '' then 
                 return self.Library:Notify('Invalid config name (empty)', 3)
             end
+
             local success, err = self:Save(name)
             if not success then
                 return self.Library:Notify('Failed to save config: ' .. err, 3)
             end
+
             self.Library:Notify(string.format('Created config %q', name), 3)
-            section:Refresh("ConfigList", self:RefreshConfigList())
-        end})
-        section:Button({Name = "Load Config", Callback = function()
-            local name = Library.Flags["ConfigList"]
+            configList:Refresh(self:RefreshConfigList())
+        end
+    })
+
+    section:Button({
+        Name = "Load config", 
+        Callback = function()
+            local name = self.Library.Flags["SaveManager_ConfigList"]
             local success, err = self:Load(name)
             if not success then
                 return self.Library:Notify('Failed to load config: ' .. err, 3)
             end
+
             self.Library:Notify(string.format('Loaded config %q', name), 3)
-        end})
-        section:Button({Name = "Overwrite Config", Callback = function()
-            local name = Library.Flags["ConfigList"]
+        end
+    })
+
+    section:Button({
+        Name = "Overwrite config", 
+        Callback = function()
+            local name = self.Library.Flags["SaveManager_ConfigList"]
             local success, err = self:Save(name)
             if not success then
                 return self.Library:Notify('Failed to overwrite config: ' .. err, 3)
             end
+
             self.Library:Notify(string.format('Overwrote config %q', name), 3)
-        end})
-        section:Button({Name = "Refresh List", Callback = function()
-            section:Refresh("ConfigList", self:RefreshConfigList())
-        end})
-        section:Button({Name = "Set as Autoload", Callback = function()
-            local name = Library.Flags["ConfigList"]
-            writefile(self.Folder .. '/configs/autoload.txt', name)
-            self.Library:Notify(string.format('Set %q to auto load', name), 3)
-        end})
-        SaveManager:SetIgnoreIndexes({ "ConfigList", "ConfigName" })
+        end
+    })
+
+    section:Button({
+        Name = "Refresh list", 
+        Callback = function()
+            configList:Refresh(self:RefreshConfigList())
+        end
+    })
+
+    section:Button({
+        Name = "Set as autoload", 
+        Callback = function()
+            local name = self.Library.Flags["SaveManager_ConfigList"]
+            if name then
+                self:SetAutoloadConfig(name)
+                self.Library:Notify(string.format('Set %q to auto load', name), 3)
+            end
+        end
+    })
+
+    SaveManager:SetIgnoreIndexes({ "SaveManager_ConfigList", "SaveManager_ConfigName" })
     end
     SaveManager:BuildFolderTree()
 end
