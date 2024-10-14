@@ -147,87 +147,90 @@ local SaveManager = {} do
         end
     end
     function SaveManager:BuildConfigSection(tab)
-    assert(self.Library, 'Must set SaveManager.Library')
+        assert(self.Library, 'Must set SaveManager.Library')
 
-    local section = tab:Section({Name = "Configuration", Side = "Right"})
+        local section = tab:Section({Name = "Configuration", Side = "Right"})
 
-    section:Textbox({
-        Name = "Config Name",
-        Flag = "SaveManager_ConfigName",
-        Default = "",
-        Callback = function() end
-    })
+        section:Textbox({
+            Name = "Config Name",
+            Flag = "SaveManager_ConfigName",
+            Default = "",
+            Callback = function() end
+        })
 
-    local configList = section:List({
-        Name = "Config List",
-        Flag = "SaveManager_ConfigList",
-        Options = self:RefreshConfigList(),
-        Callback = function() end
-    })
+        local configList = section:List({
+            Name = "Config List",
+            Flag = "SaveManager_ConfigList",
+            Options = self:RefreshConfigList(),
+            Callback = function() end
+        })
 
-    section:Button({
-        Name = "Create config", 
-        Callback = function()
-            local name = self.Library.Flags["SaveManager_ConfigName"]
-            if name:gsub(' ', '') == '' then 
-                return self.Library:Notify('Invalid config name (empty)', 3)
+        section:Button({
+            Name = "Create config", 
+            Callback = function()
+                local name = self.Library.Flags["SaveManager_ConfigName"]
+                if name:gsub(' ', '') == '' then 
+                    return self.Library:Notify('Invalid config name (empty)', 3)
+                end
+
+                local success, err = self:Save(name)
+                if not success then
+                    return self.Library:Notify('Failed to save config: ' .. err, 3)
+                end
+
+                self.Library:Notify(string.format('Created config %q', name), 3)
+                configList:Refresh(self:RefreshConfigList())
             end
+        })
 
-            local success, err = self:Save(name)
-            if not success then
-                return self.Library:Notify('Failed to save config: ' .. err, 3)
+        section:Button({
+            Name = "Load config", 
+            Callback = function()
+                local name = self.Library.Flags["SaveManager_ConfigList"]
+                local success, err = self:Load(name)
+                if not success then
+                    return self.Library:Notify('Failed to load config: ' .. err, 3)
+                end
+
+                self.Library:Notify(string.format('Loaded config %q', name), 3)
             end
+        })
 
-            self.Library:Notify(string.format('Created config %q', name), 3)
-            configList:Refresh(self:RefreshConfigList())
-        end
-    })
+        section:Button({
+            Name = "Overwrite config", 
+            Callback = function()
+                local name = self.Library.Flags["SaveManager_ConfigList"]
+                local success, err = self:Save(name)
+                if not success then
+                    return self.Library:Notify('Failed to overwrite config: ' .. err, 3)
+                end
 
-    section:Button({
-        Name = "Load config", 
-        Callback = function()
-            local name = self.Library.Flags["SaveManager_ConfigList"]
-            local success, err = self:Load(name)
-            if not success then
-                return self.Library:Notify('Failed to load config: ' .. err, 3)
+                self.Library:Notify(string.format('Overwrote config %q', name), 3)
             end
+        })
 
-            self.Library:Notify(string.format('Loaded config %q', name), 3)
-        end
-    })
-
-    section:Button({
-        Name = "Overwrite config", 
-        Callback = function()
-            local name = self.Library.Flags["SaveManager_ConfigList"]
-            local success, err = self:Save(name)
-            if not success then
-                return self.Library:Notify('Failed to overwrite config: ' .. err, 3)
+        section:Button({
+            Name = "Refresh list", 
+            Callback = function()
+                configList:Refresh(self:RefreshConfigList())
             end
+        })
 
-            self.Library:Notify(string.format('Overwrote config %q', name), 3)
-        end
-    })
-
-    section:Button({
-        Name = "Refresh list", 
-        Callback = function()
-            configList:Refresh(self:RefreshConfigList())
-        end
-    })
-
-    section:Button({
-        Name = "Set as autoload", 
-        Callback = function()
-            local name = self.Library.Flags["SaveManager_ConfigList"]
-            if name then
-                self:SetAutoloadConfig(name)
-                self.Library:Notify(string.format('Set %q to auto load', name), 3)
+        section:Button({
+            Name = "Set as autoload", 
+            Callback = function()
+                local name = self.Library.Flags["SaveManager_ConfigList"]
+                if name then
+                    self:SetAutoloadConfig(name)
+                    self.Library:Notify(string.format('Set %q to auto load', name), 3)
+                end
             end
-        end
-    })
+        })
 
-    SaveManager:SetIgnoreIndexes({ "SaveManager_ConfigList", "SaveManager_ConfigName" })
+        SaveManager:SetIgnoreIndexes({ "SaveManager_ConfigList", "SaveManager_ConfigName" })
+    end
+    function SaveManager:SetAutoloadConfig(name)
+        writefile(self.Folder .. '/configs/autoload.txt', name)
     end
     SaveManager:BuildFolderTree()
 end
